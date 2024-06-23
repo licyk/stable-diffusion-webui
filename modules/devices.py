@@ -293,3 +293,44 @@ def force_model_fp16():
     sgm_util.GroupNorm32 = torch.nn.GroupNorm
     ldm_util.GroupNorm32 = torch.nn.GroupNorm
     print("ldm/sgm GroupNorm32 replaced with normal torch.nn.GroupNorm due to `--precision half`.")
+
+
+def get_stream_impl():
+    if torch.cuda.is_available():
+        return torch.cuda.Stream
+
+    if has_xpu():
+        return torch.xpu.Stream
+
+    return None
+
+
+def get_stream_wrapper():
+    if torch.cuda.is_available():
+        return torch.cuda.stream
+
+    if has_xpu():
+        return torch.xpu.stream
+
+    return None
+
+
+def get_event_impl():
+    if torch.cuda.is_available():
+        return torch.cuda.Event
+
+    if has_xpu():
+        return torch.xpu.Event
+
+    return None
+
+
+def get_current_stream():
+    if torch.cuda.is_available():
+        return torch.cuda.current_stream(device)
+
+    if has_xpu():
+        return torch.xpu.current_stream(device)
+
+    return None
+
